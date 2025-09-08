@@ -1,10 +1,15 @@
-
+from flask import Flask, render_template, request
 import pickle
 import numpy as np
 import pandas as pd
-print("Loading trained medical recommendation system...")
+import os
+
+app = Flask(__name__)
+
+# Load the trained model
 svc = pickle.load(open('svc.pkl', 'rb'))
-print("Loading medical databases...")
+
+# Load databases
 sym_des = pd.read_csv("symtoms_df.csv")
 precautions = pd.read_csv("precautions_df.csv")
 workout = pd.read_csv("workout_df.csv")
@@ -44,68 +49,19 @@ def helper(dis):
     
     return desc, pre, med, die, wrkout
 
-def run_medical_system():
-    """Main function to run the medical recommendation system"""
-    print("\n" + "="*60)
-    print("🏥 PERSONALIZED MEDICAL RECOMMENDATION SYSTEM")
-    print("="*60)
-    print("Enter your symptoms separated by commas")
-    print("Example: itching,skin_rash,fatigue")
-    print("Type 'quit' to exit")
-    print("="*60)
-    
-    while True:
-        symptoms = input("\nEnter your symptoms: ").strip()
-        
-        if symptoms.lower() == 'quit':
-            print("Thank you for using our medical recommendation system!")
-            break
-            
-        if not symptoms:
-            print("Please enter some symptoms.")
-            continue
-            
-        # Process symptoms
-        user_symptoms = [s.strip().lower() for s in symptoms.split(',')]
-        
-        try:
-            # Predict disease
-            predicted_disease = get_predicted_value(user_symptoms)
-            
-            # Get recommendations
-            desc, pre, med, die, wrkout = helper(predicted_disease)
-            
-            # Display results
-            print("\n" + "="*50)
-            print(f"🩺 PREDICTED DISEASE: {predicted_disease}")
-            print("="*50)
-            
-            print("\n📋 DESCRIPTION:")
-            print(desc)
-            
-            print("\n⚠️  PRECAUTIONS:")
-            for i, precaution in enumerate(pre, 1):
-                if pd.notna(precaution):
-                    print(f"{i}. {precaution}")
-            
-            print("\n💊 RECOMMENDED MEDICATIONS:")
-            for i, medication in enumerate(med, 1):
-                if pd.notna(medication):
-                    print(f"{i}. {medication}")
-            
-            print("\n🥗 RECOMMENDED DIET:")
-            for i, diet in enumerate(die, 1):
-                if pd.notna(diet):
-                    print(f"{i}. {diet}")
-            
-            print("\n🏃 RECOMMENDED WORKOUTS:")
-            for i, workout_item in enumerate(wrkout, 1):
-                if pd.notna(workout_item):
-                    print(f"{i}. {workout_item}")
-                    
-        except Exception as e:
-            print(f"Error processing symptoms: {e}")
-            print("Please check your symptoms and try again.")
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        symptoms_input = request.form.get('symptoms')
+        if symptoms_input:
+            user_symptoms = [s.strip().lower() for s in symptoms_input.split(',')]
+            try:
+                predicted_disease = get_predicted_value(user_symptoms)
+                desc, pre, med, die, wrkout = helper(predicted_disease)
+                return render_template('result.html', disease=predicted_disease, desc=desc, pre=pre, med=med, die=die, wrkout=wrkout)
+            except Exception as e:
+                return render_template('index.html', error=str(e))
+    return render_template('index.html')
 
-if __name__ == "__main__":
-    run_medical_system()
+if __name__ == '__main__':
+    app.run(debug=True)

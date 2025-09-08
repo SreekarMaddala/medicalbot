@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medical Recommendation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <h1>Personalized Medical Recommendation System</h1>
+        <form method="POST" action="/">
+            <label for="symptoms">Enter your symptoms (comma separated):</label>
+            <input type="text" id="symptoms" name="symptoms" placeholder="e.g. itching, skin_rash, fatigue" required />
+            <button type="submit">Get Recommendation</button>
+        </form>
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medical Recommendation Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Recommendation Result</h1>
+        <h2>Predicted Disease: {{ disease }}</h2>
+
+        <section>
+            <h3>Description</h3>
+            <p>{{ desc }}</p>
+        </section>
+
+        <section>
+            <h3>Precautions</h3>
+            <ul>
+                {% for precaution in pre %}
+                    <li>{{ precaution }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section>
+            <h3>Recommended Medications</h3>
+            <ul>
+                {% for medication in med %}
+                    <li>{{ medication }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section>
+            <h3>Recommended Diet</h3>
+            <ul>
+                {% for diet in die %}
+                    <li>{{ diet }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section>
+            <h3>Recommended Workouts</h3>
+            <ul>
+                {% for workout_item in wrkout %}
+                    <li>{{ workout_item }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <a href="{{ url_for('index') }}" class="button">Back</a>
+    </div>
+</body>
+</html>
