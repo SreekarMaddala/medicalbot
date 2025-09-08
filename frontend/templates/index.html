@@ -11,7 +11,12 @@
         <h1>Personalized Medical Recommendation System</h1>
         <form method="POST" action="/">
             <label for="symptoms">Enter your symptoms (comma separated):</label>
-            <input type="text" id="symptoms" name="symptoms" placeholder="e.g. itching, skin_rash, fatigue" required />
+            <input list="symptom-list" id="symptoms" name="symptoms" placeholder="e.g. itching, skin_rash, fatigue" required />
+            <datalist id="symptom-list">
+                {% for symptom in symptoms %}
+                <option value="{{ symptom }}"></option>
+                {% endfor %}
+            </datalist>
             <button type="submit">Get Recommendation</button>
         </form>
         {% if error %}

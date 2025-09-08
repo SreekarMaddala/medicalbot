@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import pandas as pd
 import os
+from config import BASE_URL
 
 app = Flask(__name__)
 
@@ -58,10 +59,10 @@ def index():
             try:
                 predicted_disease = get_predicted_value(user_symptoms)
                 desc, pre, med, die, wrkout = helper(predicted_disease)
-                return render_template('result.html', disease=predicted_disease, desc=desc, pre=pre, med=med, die=die, wrkout=wrkout)
+                return render_template('result.html', disease=predicted_disease, desc=desc, pre=pre, med=med, die=die, wrkout=wrkout, base_url=BASE_URL)
             except Exception as e:
-                return render_template('index.html', error=str(e))
-    return render_template('index.html')
+                return render_template('index.html', error=str(e), base_url=BASE_URL, symptoms=list(symptoms_dict.keys()))
+    return render_template('index.html', base_url=BASE_URL, symptoms=list(symptoms_dict.keys()))
 
 if __name__ == '__main__':
     app.run(debug=True)
