@@ -5,54 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Medical Recommendation Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head>
 <body>
     <div class="container">
         <h1>Medical Recommendation Result</h1>
         <h2>Predicted Disease: {{ disease }}</h2>
 
-        <section>
-            <h3>Description</h3>
+        <div class="card">
+            <h3><i class="fas fa-info-circle"></i> Description</h3>
             <p>{{ desc }}</p>
-        </section>
+        </div>
 
-        <section>
-            <h3>Precautions</h3>
+        <div class="card">
+            <h3><i class="fas fa-shield-alt"></i> Precautions</h3>
             <ul>
                 {% for precaution in pre %}
                     <li>{{ precaution }}</li>
                 {% endfor %}
             </ul>
-        </section>
+        </div>
 
-        <section>
-            <h3>Recommended Medications</h3>
+        <div class="card">
+            <h3><i class="fas fa-pills"></i> Recommended Medications</h3>
             <ul>
                 {% for medication in med %}
                     <li>{{ medication }}</li>
                 {% endfor %}
             </ul>
-        </section>
+        </div>
 
-        <section>
-            <h3>Recommended Diet</h3>
+        <div class="card">
+            <h3><i class="fas fa-utensils"></i> Recommended Diet</h3>
             <ul>
                 {% for diet in die %}
                     <li>{{ diet }}</li>
                 {% endfor %}
             </ul>
-        </section>
+        </div>
 
-        <section>
-            <h3>Recommended Workouts</h3>
+        <div class="card">
+            <h3><i class="fas fa-dumbbell"></i> Recommended Workouts</h3>
             <ul>
                 {% for workout_item in wrkout %}
                     <li>{{ workout_item }}</li>
                 {% endfor %}
             </ul>
-        </section>
+        </div>
 
-        <a href="{{ url_for('index') }}" class="button">Back</a>
+        <div class="actions">
+            <button onclick="window.print()" class="button"><i class="fas fa-print"></i> Print</button>
+            <button onclick="saveAsPDF()" class="button"><i class="fas fa-download"></i> Save as PDF</button>
+            <a href="{{ url_for('index') }}" class="button"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
     </div>
 </body>
 </html>

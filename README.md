@@ -1,149 +1,73 @@
-# Medical Bot - Personalized Medical Recommendation System
+# Welcome to your Lovable project
 
-An AI-powered medical recommendation system that provides personalized health recommendations based on symptoms input by users.
+## Project info
 
-## Features
+**URL**: https://lovable.dev/projects/518e69bc-91a9-4674-b14b-997f65489b4c
 
-- **Symptom-based Disease Prediction**: Uses machine learning to predict potential diseases based on symptoms
-- **Comprehensive Recommendations**: Provides detailed recommendations including:
-  - Disease description
-  - Precautionary measures
-  - Recommended medications
-  - Dietary suggestions
-  - Exercise/workout recommendations
-- **User-friendly Interface**: Simple command-line interface for easy interaction
-- **Extensive Symptom Database**: Covers 132 different symptoms and 41 diseases
+## How can I edit this code?
 
-## Technologies Used
+There are several ways of editing your application.
 
-- **Python 3.x**
-- **Machine Learning**: Scikit-learn (SVM classifier)
-- **Data Processing**: Pandas, NumPy
-- **Model Persistence**: Pickle
-- **Jupyter Notebooks**: For development and analysis
+**Use Lovable**
 
-## Dataset Information
+Simply visit the [Lovable Project](https://lovable.dev/projects/518e69bc-91a9-4674-b14b-997f65489b4c) and start prompting.
 
-The system uses multiple CSV files for comprehensive medical information:
-- `Training.csv`: Training data for the ML model
-- `symtoms_df.csv`: Symptom descriptions
-- `precautions_df.csv`: Disease precautions
-- `medications.csv`: Recommended medications
-- `diets.csv`: Dietary recommendations
-- `workout_df.csv`: Exercise recommendations
-- `description.csv`: Disease descriptions
+Changes made via Lovable will be committed automatically to this repo.
 
-## Installation
+**Use your preferred IDE**
 
-1. Clone the repository:
-```bash
-git clone https://github.com/SreekarMaddala/medicalbot.git
-cd medicalbot
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-2. Create a virtual environment:
-```bash
-python -m venv medibot_env
-source medibot_env/bin/activate  # On Windows: medibot_env\Scripts\activate
-```
+**Edit a file directly in GitHub**
 
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-## Usage
+**Use GitHub Codespaces**
 
-### Command Line Interface
-Run the medical recommendation system:
-```bash
-python run_medical_system.py
-```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-### Jupyter Notebook
-Open the notebook for development and analysis:
-```bash
-jupyter notebook "Medicine Recommendation System.ipynb"
-```
+## What technologies are used for this project?
 
-## How It Works
+This project is built with:
 
-1. **Input**: User enters symptoms separated by commas
-2. **Processing**: System processes symptoms using trained ML model
-3. **Prediction**: Disease is predicted based on symptom patterns
-4. **Recommendations**: Comprehensive recommendations are provided based on the predicted disease
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-## Example Usage
+## How can I deploy this project?
 
-```
-Enter your symptoms: itching,skin_rash,fatigue
+Simply open [Lovable](https://lovable.dev/projects/518e69bc-91a9-4674-b14b-997f65489b4c) and click on Share -> Publish.
 
-PREDICTED DISEASE: Fungal infection
+## Can I connect a custom domain to my Lovable project?
 
-DESCRIPTION: Fungal infections are common throughout much of the natural world...
+Yes, you can!
 
-PRECAUTIONS:
-1. Keep the affected area clean and dry
-2. Use antifungal powder
-3. Avoid sharing personal items
-4. Wear breathable fabrics
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-RECOMMENDED MEDICATIONS:
-1. Clotrimazole
-2. Terbinafine
-
-RECOMMENDED DIET:
-1. Probiotic foods
-2. Avoid sugary foods
-
-RECOMMENDED WORKOUTS:
-1. Light walking
-2. Yoga
-```
-
-## Model Information
-
-- **Algorithm**: Support Vector Machine (SVM)
-- **Accuracy**: High accuracy on training data
-- **Features**: 132 binary symptom features
-- **Classes**: 41 different diseases
-
-## File Structure
-
-```
-medicalbot/
-├── run_medical_system.py          # Main CLI application
-├── Medicine Recommendation System.ipynb  # Jupyter notebook
-├── Training.csv                   # Training dataset
-├── symtoms_df.csv                 # Symptom descriptions
-├── precautions_df.csv             # Disease precautions
-├── medications.csv                # Medication database
-├── diets.csv                      # Diet recommendations
-├── workout_df.csv                 # Exercise recommendations
-├── description.csv                # Disease descriptions
-├── svc.pkl                        # Trained SVM model
-├── random_forest.pkl              # Alternative RF model
-├── requirements.txt               # Python dependencies
-├── README.md                      # This file
-└── .gitignore                     # Git ignore rules
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## Disclaimer
-
-This system is for educational and informational purposes only. It should not be used as a substitute for professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers for medical concerns.
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## Contact
-
-For questions or suggestions, please open an issue on GitHub.
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
