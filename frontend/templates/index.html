@@ -11,19 +11,30 @@
 <body>
     <div class="container">
         <h1>Personalized Medical Recommendation System</h1>
+
         <form method="POST" action="/" id="symptom-form">
-            <label for="symptoms">Enter your symptoms (comma separated):</label>
-            <input list="symptom-list" id="symptoms" name="symptoms" placeholder="e.g. itching, skin_rash, fatigue" required />
+            <label for="symptoms"><i class="fas fa-stethoscope" style="margin-right:6px;"></i>Enter your symptoms (comma separated):</label>
+            <input 
+                list="symptom-list" 
+                id="symptoms" 
+                name="symptoms" 
+                placeholder="e.g. itching, skin_rash, fatigue" 
+                required 
+            />
             <datalist id="symptom-list">
                 {% for symptom in symptoms %}
                 <option value="{{ symptom }}"></option>
                 {% endfor %}
             </datalist>
-            <button type="submit">Get Recommendation</button>
+            <button type="submit"><i class="fas fa-heartbeat" style="margin-right:6px;"></i>Get Recommendation</button>
         </form>
+
         <div class="spinner" id="spinner"></div>
+
         {% if error %}
-        <div class="error"><i class="fas fa-exclamation-triangle"></i> {{ error }}</div>
+        <div class="error">
+            <i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i> {{ error }}
+        </div>
         {% endif %}
     </div>
 </body>
