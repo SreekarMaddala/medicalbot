@@ -1,64 +1,415 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Medical Recommendation Result</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Medical Recommendation — Apple Style</title>
+
+  <!-- Use system fonts (SF Pro on Apple devices) -->
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --card: rgba(255,255,255,0.7);
+      --muted:#6b7280;
+      --glass-border: rgba(255,255,255,0.6);
+      --accent-1: linear-gradient(135deg,#4f46e5 0%, #06b6d4 100%);
+      --accent-2: linear-gradient(135deg,#60a5fa 0%, #a78bfa 100%);
+      --shadow: 0 8px 30px rgba(20,20,50,0.08);
+      --radius: 16px;
+      --glass-blur: 12px;
+      --max-width: 980px;
+      --green: #10b981;
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg: linear-gradient(180deg,#0b1020 0%, #0f1724 100%);
+        --card: rgba(18,20,30,0.55);
+        --muted:#9ca3af;
+        --glass-border: rgba(255,255,255,0.04);
+        --shadow: 0 10px 40px rgba(2,6,23,0.7);
+      }
+    }
+
+    /* reset */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: var(--bg);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      color: #0f1724;
+      padding:36px 20px;
+      display:flex;justify-content:center;
+      align-items:flex-start;
+      gap:24px;
+      line-height:1.45;
+    }
+
+    /* container */
+    .app{
+      width:100%;
+      max-width: var(--max-width);
+      margin: 10px auto 60px;
+    }
+
+    header.topbar{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;margin-bottom:18px;
+    }
+
+    .brand{
+      display:flex;align-items:center;gap:12px;
+    }
+    .logo{
+      width:56px;height:56px;border-radius:12px;
+      background: linear-gradient(135deg,#eff6ff, #eef2ff);
+      display:grid;place-items:center;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(8px) saturate(120%);
+    }
+    .logo svg{width:34px;height:34px;}
+
+    h1.title{
+      margin:0;font-weight:600;font-size:20px;
+      letter-spacing:-0.2px;color:inherit;
+    }
+    p.subtitle{margin:0;color:var(--muted);font-size:13px}
+
+    .controls{
+      display:flex;gap:8px;align-items:center;
+    }
+    .control-btn{
+      background:transparent;border:0;padding:8px 12px;border-radius:12px;cursor:pointer;
+      font-weight:600;color:var(--muted);display:inline-flex;gap:8px;align-items:center;
+      transition: all .18s ease-in-out;backdrop-filter: blur(6px);
+    }
+    .control-btn:focus{outline:2px solid rgba(99,102,241,0.16)}
+    .chip{font-size:13px;padding:8px 14px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);background:rgba(255,255,255,0.45)}
+
+    /* layout grid */
+    .grid{
+      display:grid;grid-template-columns: 1fr 360px;gap:20px;align-items:start;
+    }
+    @media (max-width:980px){
+      .grid{grid-template-columns:1fr}
+    }
+
+    /* main card */
+    .panel{
+      border-radius: var(--radius);padding:20px;box-shadow:var(--shadow);
+      background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.45));
+      border: 1px solid rgba(255,255,255,0.5);
+      backdrop-filter: blur(var(--glass-blur)) saturate(120%);
+    }
+    @media (prefers-color-scheme: dark){
+      .panel{background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));}
+    }
+
+    .hero{
+      display:flex;gap:20px;align-items:center;margin-bottom:14px;
+    }
+    .hero .left{flex:1}
+    .disease-tag{
+      display:inline-flex;padding:8px 12px;border-radius:999px;font-weight:700;font-size:13px;
+      background: linear-gradient(90deg, rgba(99,102,241,0.12), rgba(6,182,212,0.06));
+      color: #0f1724;border:1px solid rgba(99,102,241,0.08)
+    }
+    .disease-name{font-size:18px;margin:8px 0 0}
+    .meta-row{display:flex;gap:12px;align-items:center;margin-top:10px}
+    .meta{font-size:13px;color:var(--muted)}
+
+    /* cards list */
+    .card-list{display:grid;gap:14px}
+    .card{
+      border-radius:14px;padding:16px;background:var(--card);border:1px solid var(--glass-border);
+      box-shadow: 0 6px 20px rgba(10,12,30,0.04);
+      transition: transform .18s cubic-bezier(.2,.9,.3,1), box-shadow .18s;
+    }
+    .card:hover{transform: translateY(-6px);box-shadow: 0 18px 50px rgba(10,12,30,0.08)}
+    .card h3{margin:0 0 8px;font-size:15px}
+    .card p{margin:0;color:var(--muted)}
+
+    .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:580px){.two-cols{grid-template-columns:1fr}}
+
+    ul.clean{padding-left:18px;margin:6px 0}
+    ul.clean li{margin:8px 0}
+
+    /* sidebar */
+    .sidebar{
+      position:relative;top:0;align-self:start;
+      display:flex;flex-direction:column;gap:12px
+    }
+    .mini-card{padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--glass-border);}
+
+    .med-list{display:flex;flex-direction:column;gap:8px}
+    .med-item{display:flex;align-items:center;gap:12px}
+    .pill{
+      min-width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,#fff,#f7fafc);display:grid;place-items:center;border:1px solid rgba(0,0,0,0.04)
+    }
+
+    /* action row */
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .button{
+      border:0;padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer;background:var(--accent-1);color:white;box-shadow: 0 8px 24px rgba(79,70,229,0.12);
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .button.secondary{background:transparent;color:var(--muted);border:1px solid rgba(0,0,0,0.06)}
+    .button:active{transform:translateY(1px)}
+
+    /* footer */
+    .disclaimer{font-size:13px;color:var(--muted);margin-top:12px}
+
+    /* subtle animations */
+    .fade-in{opacity:0;transform:translateY(6px);animation:fadeIn .6s forwards;}
+    @keyframes fadeIn{to{opacity:1;transform:none}}
+
+    /* print friendly */
+    @media print{
+      body{background:white;padding:0}
+      .controls,.sidebar{display:none}
+      .grid{grid-template-columns:1fr}
+      .panel{box-shadow:none;border:0}
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Medical Recommendation Result</h1>
-        <h2>Predicted Disease: {{ disease }}</h2>
+  <div class="app">
 
-        <div class="card">
-            <h3><i class="fas fa-info-circle"></i> Description</h3>
-            <p>{{ desc }}</p>
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <!-- simple heart + cross icon -->
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="6" y="6" width="52" height="52" rx="12" fill="url(#g)" />
+            <path d="M32 22c3.5-6 14-6 14 2 0 12-14 14-14 24-0-10-14-12-14-24 0-8 10-8 14-2z" fill="white" opacity="0.9" />
+            <defs>
+              <linearGradient id="g" x1="0" x2="1">
+                <stop offset="0" stop-color="#60a5fa" />
+                <stop offset="1" stop-color="#a78bfa" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1 class="title">Medical Recommendation</h1>
+          <p class="subtitle">Personalized guidance generated by the model</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="control-btn chip" id="modeToggle" aria-pressed="false" title="Toggle light/dark">Auto</button>
+        <button class="control-btn" id="printBtn" title="Print result">Print</button>
+        <button class="control-btn" id="savePdf" title="Save as PDF">Download</button>
+      </div>
+    </header>
+
+    <main class="grid">
+
+      <section class="panel fade-in" aria-labelledby="resultHeading">
+        <div class="hero">
+          <div class="left">
+            <div class="disease-tag">Predicted</div>
+            <h2 id="resultHeading" class="disease-name">{{ disease }}</h2>
+            <div class="meta-row">
+              <div class="meta">Confidence: <strong id="confidence">—</strong></div>
+              <div class="meta">Generated: <time id="generatedAt">Now</time></div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+            <div class="chip">View</div>
+            <div style="font-size:12px;color:var(--muted)">Share • Export • Print</div>
+          </div>
         </div>
 
-        <div class="card">
-            <h3><i class="fas fa-shield-alt"></i> Precautions</h3>
-            <ul>
+        <div class="card-list">
+
+          <article class="card" aria-labelledby="descHeading">
+            <h3 id="descHeading"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:8px"><path d="M12 2v2M5 6l1.5 1.5M2 12h2M5 18l1.5-1.5M12 20v2M19 18l-1.5-1.5M22 12h-2M19 6l-1.5 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg> Description</h3>
+            <p id="descText">{{ desc }}</p>
+          </article>
+
+          <article class="card" aria-labelledby="precHeading">
+            <h3 id="precHeading">Precautions</h3>
+            <div class="two-cols">
+              <ul id="precList" class="clean">
                 {% for precaution in pre %}
-                    <li>{{ precaution }}</li>
+                  <li>{{ precaution }}</li>
                 {% endfor %}
+              </ul>
+              <div class="mini-card" style="align-self:start">
+                <strong>Important</strong>
+                <p class="disclaimer">Seek medical attention if symptoms worsen or new severe symptoms appear.</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="card" aria-labelledby="medHeading">
+            <h3 id="medHeading">Recommended Medications</h3>
+            <ul id="medList" class="clean">
+              {% for medication in med %}
+                <li>{{ medication }}</li>
+              {% endfor %}
             </ul>
+          </article>
+
+          <article class="card" aria-labelledby="dietHeading">
+            <h3 id="dietHeading">Recommended Diet</h3>
+            <ul id="dietList" class="clean">
+              {% for diet in die %}
+                <li>{{ diet }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+
+          <article class="card" aria-labelledby="workHeading">
+            <h3 id="workHeading">Recommended Workouts</h3>
+            <ul id="workList" class="clean">
+              {% for workout_item in wrkout %}
+                <li>{{ workout_item }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+
+          <div class="actions">
+            <button class="button" id="btnPrint"><span>Print</span></button>
+            <button class="button secondary" id="btnSave">Save as PDF</button>
+            <a href="{{ url_for('index') }}" class="button secondary" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px">Back</a>
+          </div>
+
+        </div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="mini-card panel fade-in">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="flex:1">
+              <div style="font-size:13px;color:var(--muted)">Quick Summary</div>
+              <div style="font-weight:700;margin-top:6px">{{ disease }}</div>
+            </div>
+            <div style="text-align:right;color:var(--muted);font-size:13px">Risk</div>
+          </div>
+          <div style="height:10px;margin-top:12px;background:rgba(0,0,0,0.06);border-radius:999px;overflow:hidden">
+            <div id="riskBar" style="width:50%;height:100%;background:linear-gradient(90deg,#f97316,#10b981)"></div>
+          </div>
         </div>
 
-        <div class="card">
-            <h3><i class="fas fa-pills"></i> Recommended Medications</h3>
-            <ul>
-                {% for medication in med %}
-                    <li>{{ medication }}</li>
-                {% endfor %}
-            </ul>
+        <div class="mini-card med-list panel fade-in">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-weight:700">Medications</div>
+            <div style="font-size:12px;color:var(--muted)">As prescribed</div>
+          </div>
+          {% for medication in med %}
+            <div class="med-item">
+              <div class="pill">💊</div>
+              <div>
+                <div style="font-weight:700">{{ medication }}</div>
+                <div style="font-size:12px;color:var(--muted)">Dosage & Notes</div>
+              </div>
+            </div>
+          {% endfor %}
         </div>
 
-        <div class="card">
-            <h3><i class="fas fa-utensils"></i> Recommended Diet</h3>
-            <ul>
-                {% for diet in die %}
-                    <li>{{ diet }}</li>
-                {% endfor %}
-            </ul>
+        <div class="mini-card panel fade-in">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <div style="font-weight:700">Actions</div>
+            <div style="font-size:12px;color:var(--muted)">Share & Export</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <button class="control-btn" id="shareBtn">Share Result</button>
+            <button class="control-btn" id="downloadJson">Export JSON</button>
+            <button class="control-btn" id="contactDoctor">Contact Doctor</button>
+          </div>
         </div>
 
-        <div class="card">
-            <h3><i class="fas fa-dumbbell"></i> Recommended Workouts</h3>
-            <ul>
-                {% for workout_item in wrkout %}
-                    <li>{{ workout_item }}</li>
-                {% endfor %}
-            </ul>
-        </div>
+      </aside>
 
-        <div class="actions">
-            <button onclick="window.print()" class="button"><i class="fas fa-print"></i> Print</button>
-            <button onclick="saveAsPDF()" class="button"><i class="fas fa-download"></i> Save as PDF</button>
-            <a href="{{ url_for('index') }}" class="button"><i class="fas fa-arrow-left"></i> Back</a>
-        </div>
-    </div>
+    </main>
+
+  </div>
+
+  <script>
+    // Lightweight interactivity: print, save as PDF (via print), dark mode toggle, export JSON, share
+
+    const printBtns = document.querySelectorAll('#printBtn, #btnPrint');
+    printBtns.forEach(b => b && b.addEventListener('click', () => window.print()));
+
+    const saveBtns = document.querySelectorAll('#savePdf, #btnSave');
+    saveBtns.forEach(b => b && b.addEventListener('click', () => window.print()));
+
+    // Mode toggle (auto / light / dark)
+    const modeToggle = document.getElementById('modeToggle');
+    let mode = 'auto';
+    modeToggle.addEventListener('click', ()=>{
+      if(mode==='auto'){mode='dark';document.documentElement.style.colorScheme='dark';modeToggle.textContent='Dark';modeToggle.setAttribute('aria-pressed','true')}
+      else if(mode==='dark'){mode='light';document.documentElement.style.colorScheme='light';modeToggle.textContent='Light';modeToggle.setAttribute('aria-pressed','true')}
+      else {mode='auto';document.documentElement.style.colorScheme='auto';modeToggle.textContent='Auto';modeToggle.setAttribute('aria-pressed','false')}
+    })
+
+    // Export JSON of data that server rendered into DOM via template variables
+    const downloadJson = document.getElementById('downloadJson');
+    if(downloadJson){
+      downloadJson.addEventListener('click', ()=>{
+        const payload = {
+          disease: "{{ disease }}",
+          desc: "{{ desc }}",
+          precautions: {{ pre | tojson }},
+          medications: {{ med | tojson }},
+          diet: {{ die | tojson }},
+          workouts: {{ wrkout | tojson }},
+          generated_at: "{{ updated_at or '' }}"
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `${payload.disease || 'result'}.json`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      })
+    }
+
+    // Share API
+    const shareBtn = document.getElementById('shareBtn');
+    if(shareBtn){
+      shareBtn.addEventListener('click', async ()=>{
+        const shareData = {title: 'Medical Recommendation', text: `Result for: {{ disease }}`};
+        try{
+          if(navigator.share){
+            await navigator.share(shareData);
+          } else {
+            alert('Share not supported in this browser. Use export instead.');
+          }
+        }catch(e){console.error(e)}
+      })
+    }
+
+    // Contact doctor - simple mailto with prefilled subject
+    const contactDoctor = document.getElementById('contactDoctor');
+    if(contactDoctor){
+      contactDoctor.addEventListener('click', ()=>{
+        const subject = encodeURIComponent('Consultation request: {{ disease }}');
+        const body = encodeURIComponent('Hi Doctor,\n\nI received the following recommendation: \n\n{{ desc }}\n\nPlease advise next steps.\n');
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      })
+    }
+
+    // Small runtime: compute confidence from riskBar width if available
+    (function setConfidence(){
+      try{
+        const rb = document.getElementById('riskBar');
+        if(rb){
+          const w = parseFloat(rb.style.width) || 50;
+          const conf = Math.round((100 - (100 - w))/1);
+          document.getElementById('confidence').textContent = `${Math.round(w)}%`;
+        }
+      }catch(e){/* ignore */}
+    })();
+
+    // Accessibility: focus outline visible when using keyboard
+    document.body.addEventListener('keydown', (e)=>{
+      if(e.key === 'Tab') document.documentElement.classList.add('show-focus');
+    })
+  </script>
 </body>
 </html>
