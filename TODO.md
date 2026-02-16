@@ -6,4 +6,4 @@
 - [x] Create frontend/static/script.js: Implement form validation, autocomplete enhancements, loading indicators
 - [x] Create frontend/templates/about.html: New page with system information
 - [x] Update frontend/app.py: Add route for about page
-- [ ] Test enhancements: Run Flask app, verify responsiveness, check autocomplete, browser console
+- [ ] Test enhancements: Run FastAPI app, verify responsiveness, check autocomplete, browser console
