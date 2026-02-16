@@ -1,17 +1,28 @@
-from flask import Flask, render_template, request
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import pickle
 import numpy as np
 import pandas as pd
 import os
-from config import BASE_URL
+from pydantic import BaseModel
 
-app = Flask(__name__)
+app = FastAPI(title="Medical Recommendation System")
 
 # Get the base directory (project root)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Mount static files
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "frontend/static")), name="static")
+
+# Set up templates
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "frontend/templates"))
+
 # Load the trained model
+print("Loading trained medical recommendation system...")
 svc = pickle.load(open(os.path.join(BASE_DIR, 'svc.pkl'), 'rb'))
+print("Loading medical databases...")
 
 # Load databases
 sym_des = pd.read_csv(os.path.join(BASE_DIR, "symtoms_df.csv"))
@@ -26,6 +37,7 @@ symptoms_dict = {'itching': 0, 'skin_rash': 1, 'nodal_skin_eruptions': 2, 'conti
 
 diseases_list = {15: 'Fungal infection', 4: 'Allergy', 16: 'GERD', 9: 'Chronic cholestasis', 14: 'Drug Reaction', 33: 'Peptic ulcer diseae', 1: 'AIDS', 12: 'Diabetes ', 17: 'Gastroenteritis', 6: 'Bronchial Asthma', 23: 'Hypertension ', 30: 'Migraine', 7: 'Cervical spondylosis', 32: 'Paralysis (brain hemorrhage)', 28: 'Jaundice', 29: 'Malaria', 8: 'Chicken pox', 11: 'Dengue', 37: 'Typhoid', 40: 'hepatitis A', 19: 'Hepatitis B', 20: 'Hepatitis C', 21: 'Hepatitis D', 22: 'Hepatitis E', 3: 'Alcoholic hepatitis', 36: 'Tuberculosis', 10: 'Common Cold', 34: 'Pneumonia', 13: 'Dimorphic hemmorhoids(piles)', 18: 'Heart attack', 39: 'Varicose veins', 26: 'Hypothyroidism', 24: 'Hyperthyroidism', 25: 'Hypoglycemia', 31: 'Osteoarthristis', 5: 'Arthritis', 0: '(vertigo) Paroymsal  Positional Vertigo', 2: 'Acne', 38: 'Urinary tract infection', 35: 'Psoriasis', 27: 'Impetigo'}
 
+
 def get_predicted_value(patient_symptoms):
     """Predict disease based on symptoms"""
     input_vector = np.zeros(len(symptoms_dict))
@@ -33,6 +45,7 @@ def get_predicted_value(patient_symptoms):
         if item in symptoms_dict:
             input_vector[symptoms_dict[item]] = 1
     return diseases_list[svc.predict([input_vector])[0]]
+
 
 def helper(dis):
     """Get recommendations for a disease"""
@@ -53,23 +66,79 @@ def helper(dis):
     
     return desc, pre, med, die, wrkout
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        symptoms_input = request.form.get('symptoms')
-        if symptoms_input:
-            user_symptoms = [s.strip().lower() for s in symptoms_input.split(',')]
-            try:
-                predicted_disease = get_predicted_value(user_symptoms)
-                desc, pre, med, die, wrkout = helper(predicted_disease)
-                return render_template('result.html', disease=predicted_disease, desc=desc, pre=pre, med=med, die=die, wrkout=wrkout, base_url=BASE_URL)
-            except Exception as e:
-                return render_template('index.html', error=str(e), base_url=BASE_URL, symptoms=list(symptoms_dict.keys()))
-    return render_template('index.html', base_url=BASE_URL, symptoms=list(symptoms_dict.keys()))
 
-@app.route('/about')
-def about():
-    return render_template('about.html', base_url=BASE_URL)
+# Pydantic model for request
+class SymptomRequest(BaseModel):
+    symptoms: str
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    """Home page"""
+    return templates.TemplateResponse("index.html", {"request": request, "symptoms": list(symptoms_dict.keys())})
+
+
+@app.post("/", response_class=HTMLResponse)
+async def predict(request: Request, symptoms: str = Form(...)):
+    """Predict disease based on symptoms"""
+    if symptoms:
+        user_symptoms = [s.strip().lower() for s in symptoms.split(',')]
+        try:
+            predicted_disease = get_predicted_value(user_symptoms)
+            desc, pre, med, die, wrkout = helper(predicted_disease)
+            return templates.TemplateResponse("result.html", {
+                "request": request,
+                "disease": predicted_disease,
+                "desc": desc,
+                "pre": pre,
+                "med": med,
+                "die": die,
+                "wrkout": wrkout
+            })
+        except Exception as e:
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "error": str(e),
+                "symptoms": list(symptoms_dict.keys())
+            })
+    return templates.TemplateResponse("index.html", {"request": request, "symptoms": list(symptoms_dict.keys())})
+
+
+# API endpoint for JSON predictions
+@app.post("/api/predict")
+async def predict_api(symptoms: str = Form(...)):
+    """API endpoint for disease prediction (JSON response)"""
+    if symptoms:
+        user_symptoms = [s.strip().lower() for s in symptoms.split(',')]
+        try:
+            predicted_disease = get_predicted_value(user_symptoms)
+            desc, pre, med, die, wrkout = helper(predicted_disease)
+            return {
+                "success": True,
+                "disease": predicted_disease,
+                "description": desc,
+                "precautions": pre,
+                "medications": med,
+                "diets": die,
+                "workouts": wrkout
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
+    return {"success": False, "error": "No symptoms provided"}
+
+
+@app.get("/api/symptoms")
+async def get_symptoms():
+    """Get list of all available symptoms"""
+    return {"symptoms": list(symptoms_dict.keys())}
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about(request: Request):
+    """About page"""
+    return templates.TemplateResponse("about.html", {"request": request})
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
