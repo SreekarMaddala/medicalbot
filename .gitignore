@@ -10,6 +10,13 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+web/dist
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
 *.local
 
 # Editor directories and files
