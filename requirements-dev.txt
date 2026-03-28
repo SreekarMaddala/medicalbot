@@ -1,8 +1,12 @@
-# Optional: notebooks and local experimentation (large install).
+# Optional: notebooks, local experimentation, and testing (large install).
 # Install after requirements.txt.
 
 -r requirements.txt
 
+# Notebooks
 jupyter>=1.0.0
 ipykernel>=6.30.0
 matplotlib>=3.9.0
+
+# Extra test tooling (pytest + httpx come from requirements.txt)
+pytest-asyncio>=0.24.1

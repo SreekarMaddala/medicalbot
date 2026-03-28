@@ -1,1 +1,11 @@
-# MedicalBot Project Run Plan\n\n✅ **1. Confirm plan** (User approved)\n\n✅ **2. Install Python dependencies** (`pip install -r requirements.txt`) - Completed\n\n✅ **3. Run FastAPI web app** (`uvicorn frontend.fastapi_app:app --host 127.0.0.1 --port 8000 --reload`) - Running at http://127.0.0.1:8000\n\n✅ **4. Verify accessible** at http://127.0.0.1:8000 (Open in browser to test with symptoms like itching,skin_rash)\n\n**5. Optional: Run CLI** (`python run_medical_system.py`)\n\n**6. Optional: Run React dev server** (`npm i && npm run dev`)
+# Test Script Implementation Plan
+
+✅ **1. Create TODO.md** - Current step completed
+✅ **2. Create pytest.ini** - Current step completed
+✅ **3. Create tests/conftest.py** - Current step completed
+✅ **4. Create tests/test_main.py** - Current step completed
+✅ **5. Update requirements-dev.txt** - Current step completed
+✅ **6. Install new deps** (`pip install -r requirements-dev.txt`) - Running
+
+⭕ **7. Run tests** (`pytest tests/ -v`)
+⭕ **8. Complete task**
