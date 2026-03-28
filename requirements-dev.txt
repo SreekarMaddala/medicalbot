@@ -1,0 +1,8 @@
+# Optional: notebooks and local experimentation (large install).
+# Install after requirements.txt.
+
+-r requirements.txt
+
+jupyter>=1.0.0
+ipykernel>=6.30.0
+matplotlib>=3.9.0
